@@ -1,5 +1,8 @@
 Cursala - Frontend Público
 
+<img width="1280" height="640" alt="miniatura github cursala com ar" src="https://github.com/user-attachments/assets/10b0a0c6-c023-44bb-9b7e-0e81c34b35ed" />
+
+
 Este repositorio contiene la interfaz pública de la plataforma Cursala, el punto de encuentro entre los usuarios y todo el ecosistema de formación digital.
 
 Rol en el Ecosistema

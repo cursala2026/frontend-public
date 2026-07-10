@@ -82,7 +82,7 @@ const nextConfig = {
         source: '/images/:path*',
         headers: [
           {
-            key: 'Cache-Control',
+            key: 'Cache-control',
             value: 'public, max-age=31536000, immutable',
           },
         ],
@@ -92,11 +92,21 @@ const nextConfig = {
         headers: [
           {
             key: 'Link',
-            value: '</images/sections/hero/cursos.jpg>; rel=preload; as=image',
+            value: '&lt;/images/sections/hero/cursos.jpg&gt;; rel=preload; as=image',
           },
         ],
       },
     ];
+  },
+  
+  // Redirección interna para la API de cursos
+  async rewrites() {
+    return [
+      {
+        source: '/api/courses',
+        destination: '/api/courses/home',
+      },
+    ]
   },
   
   webpack: (config, { dev }) => {

@@ -92,19 +92,19 @@ const nextConfig = {
         headers: [
           {
             key: 'Link',
-            value: '&lt;/images/sections/hero/cursos.jpg&gt;; rel=preload; as=image',
+            value: '</images/sections/hero/cursos.jpg>; rel=preload; as=image',
           },
         ],
       },
     ];
   },
   
-  // Redirección interna para la API de cursos
+  // Redirección interna para la API de cursos del bot
   async rewrites() {
     return [
       {
         source: '/api/courses',
-        destination: '/api/courses/home',
+        destination: '/api/courses/bot', // Apunta al endpoint exclusivo del bot
       },
     ]
   },

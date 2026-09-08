@@ -31,6 +31,6 @@ export interface ITeacherApplication {
 
 // envio final de la postulacion consolidada
 export const applyTeacher = async (payload: ITeacherApplication) => {
-  const { data } = await api.post("/v1/teacher/apply", payload);
+const { data } = await api.post("/v1/user/teacher/apply", payload);
   return data;
 };

@@ -44,7 +44,8 @@ export const TeacherApplicationForm: React.FC = () => {
     if (!file) return;
     setUploadingPhoto(true);
     try {
-      setPhotoUrl(await uploadTeacherDocument(file, "photo"));
+      const url = await uploadTeacherDocument(file, "photo");
+      setPhotoUrl(url);
     } catch {
       showError("no se pudo subir la foto");
       setPhotoUrl(null);

@@ -106,6 +106,11 @@ const nextConfig = {
         source: '/api/courses',
         destination: '/api/courses/bot', // Apunta al endpoint exclusivo del bot
       },
+      // redirigir /api/v1/* al backend real en localhost:8081
+      {
+        source: '/api/v1/:path*',
+        destination: 'http://localhost:8081/api/v1/:path*',
+      },
     ]
   },
   

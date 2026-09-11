@@ -1,21 +1,20 @@
 import api from "@/utils/axiosinstance";
 
-// sube un archivo (foto, cv o firma) al backend y devuelve la url guardada
+// levanta el archivo al servidor
 export const uploadTeacherDocument = async (
   file: File,
   type: "photo" | "cv" | "signature"
 ): Promise<string> => {
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append(type, file);
 
   const { data } = await api.post(
-    `/v1/teacher/upload-document?type=${type}`,
+    `/user/teacher/apply/upload`,
     formData,
     { headers: { "Content-Type": "multipart/form-data" } }
   );
 
-  // el backend devuelve la url del archivo (ajustamos segun la respuesta real)
-  return data?.url ?? data?.data?.url ?? data;
+  return data.data.urls[type];
 };
 
 // payload consolidado de la postulacion

@@ -168,7 +168,8 @@ export const TeacherApplicationForm: React.FC = () => {
         {/* foto */}
         <div>
           <label className="mb-1 block text-sm font-medium text-brand-tertiary">Fotografía *</label>
-          <input type="file" accept="image/*" onChange={onPhotoChange} />
+          <input type="file" accept="image/*" onChange={onPhotoChange}
+            className="block w-full text-sm text-brand-tertiary file:mr-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-brand-secondary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-brand-tertiary hover:file:opacity-90" />
           {uploadingPhoto && <p className="mt-1 text-xs text-brand-tertiary">subiendo foto...</p>}
           {photoUrl && <p className="mt-1 text-xs text-green-600">foto lista ✓</p>}
         </div>
@@ -176,7 +177,8 @@ export const TeacherApplicationForm: React.FC = () => {
         {/* cv */}
         <div>
           <label className="mb-1 block text-sm font-medium text-brand-tertiary">CV (PDF) *</label>
-          <input type="file" accept="application/pdf" onChange={onCvChange} />
+          <input type="file" accept="application/pdf" onChange={onCvChange}
+            className="block w-full text-sm text-brand-tertiary file:mr-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-brand-secondary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-brand-tertiary hover:file:opacity-90" />
           {uploadingCv && <p className="mt-1 text-xs text-brand-tertiary">subiendo cv...</p>}
           {cvUrl && <p className="mt-1 text-xs text-green-600">cv listo ✓</p>}
         </div>
@@ -196,7 +198,8 @@ export const TeacherApplicationForm: React.FC = () => {
           </div>
           {signatureMode === "draw"
             ? <SignaturePad onChange={onSignatureDraw} />
-            : <input type="file" accept="image/png,image/jpeg,image/webp" onChange={onSignatureFile} />}
+            : <input type="file" accept="image/png,image/jpeg,image/webp" onChange={onSignatureFile}
+                className="block w-full text-sm text-brand-tertiary file:mr-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-brand-secondary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-brand-tertiary hover:file:opacity-90" />}
           {signatureFile && <p className="mt-1 text-xs text-green-600">firma lista ✓</p>}
         </div>
 

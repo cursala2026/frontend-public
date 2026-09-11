@@ -1,10 +1,9 @@
 import axios from "axios";
 
-// Usar la URL base configurable via env (Next.js: NEXT_PUBLIC_API_BASE_URL)
-// Por defecto usar ruta relativa (same-origin) /api para que las peticiones vayan al backend de Next.js
+// usar la url del backend desde el env, o /api por defecto
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api",
-  withCredentials: true, // permitir envío/recepción de cookies cross-site cuando corresponda
+  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "/api",
+  withCredentials: true,
 });
 
 // NOTA: Este axios instance NO agrega automáticamente tokens de autenticación

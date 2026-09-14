@@ -18,4 +18,14 @@ describe("TeacherEntry (discriminador de sesion)", () => {
     render(<TeacherEntry isAuthenticated={true} />);
     expect(screen.getByText("Postulación Docente")).toBeInTheDocument();
   });
+
+  it("verifica que los links contengan callbackUrl=/ser-profesor", () => {
+    render(<TeacherEntry isAuthenticated={false} />);
+
+    const loginLink = screen.getByText("Ya tengo cuenta en Cursala").closest("a");
+    const registerLink = screen.getByText("Soy nuevo en Cursala").closest("a");
+
+    expect(loginLink).toHaveAttribute("href", "/login?callbackUrl=/ser-profesor");
+    expect(registerLink).toHaveAttribute("href", "/register?callbackUrl=/ser-profesor");
+  });
 });

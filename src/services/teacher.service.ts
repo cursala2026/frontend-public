@@ -9,12 +9,12 @@ export const uploadTeacherDocument = async (
   formData.append(type, file);
 
   const { data } = await api.post(
-    `/user/teacher/apply/upload`,
+    `/v1/user/teacher/apply/upload`,
     formData,
     { headers: { "Content-Type": "multipart/form-data" } }
   );
 
-  return data.data.urls[type];
+  return data.urls[type];
 };
 
 // payload consolidado de la postulacion

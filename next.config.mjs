@@ -82,7 +82,7 @@ const nextConfig = {
         source: '/images/:path*',
         headers: [
           {
-            key: 'Cache-Control',
+            key: 'Cache-control',
             value: 'public, max-age=31536000, immutable',
           },
         ],
@@ -97,6 +97,16 @@ const nextConfig = {
         ],
       },
     ];
+  },
+  
+  // Redirección interna para la API de cursos del bot
+  async rewrites() {
+    return [
+      {
+        source: '/api/courses',
+        destination: '/api/courses/bot', // Apunta al endpoint exclusivo del bot
+      },
+    ]
   },
   
   webpack: (config, { dev }) => {

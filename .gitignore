@@ -30,6 +30,9 @@ yarn-error.log*
 .env.*
 .env*.local
 
+# Regla de excepción: Permitir la plantilla
+!.env.example
+
 # vercel
 .vercel
 

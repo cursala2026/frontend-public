@@ -1,5 +1,9 @@
 Cursala - Frontend Público
+# Cursala Platform
 
+![License: Proprietary](https://img.shields.io/badge/License-Proprietary%20%2F%20All%20Rights%20Reserved-red.svg)
+
+> **Aviso de Propiedad Intelectual:** El código fuente de este repositorio está disponible únicamente para inspección, portafolio técnico y auditoría de arquitectura. Queda estrictamente prohibida su copia, modificación, despliegue o uso comercial sin autorización expresa y por escrito de Cursala.
 <img width="1280" height="640" alt="miniatura github cursala com ar" src="https://github.com/user-attachments/assets/10b0a0c6-c023-44bb-9b7e-0e81c34b35ed" />
 
 

@@ -10,6 +10,7 @@ import { getImages, getPublicFile } from "@/services/multimedia.service";
 import { getUserProfileImage } from "@/services/multimedia.service";
 import { extractCourseIdFromSlug } from "@/utils/slugify";
 import { conf } from "@/config/env";
+import { ASYNC_COURSE_COPY, getCourseModalityLabel, isAsyncCourse } from "@/lib/models/course-modality";
 import { showError, showSuccess } from "@/utils/swal";
 
 interface CourseDetailClientProps {
@@ -224,7 +225,10 @@ const CourseDetailClient: React.FC<CourseDetailClientProps> = ({ params }) => {
     );
   }
 
-  const statusInfo = getCourseStatus();
+  const isAsync = isAsyncCourse(course?.modality);
+  const statusInfo = isAsync
+    ? { label: ASYNC_COURSE_COPY.statusLabel, className: ASYNC_COURSE_COPY.statusClassName }
+    : getCourseStatus();
 
   const isFree =
     course?.isFree === true ||
@@ -310,12 +314,12 @@ const CourseDetailClient: React.FC<CourseDetailClientProps> = ({ params }) => {
                   {course.name}
                 </h1>
                 <div className="mb-4 inline-block text-brand-tertiary items-center gap-3">
-                  {statusInfo.label === "INSCRIPCIÓN ABIERTA" ? (
+                  {isAsync || statusInfo.label === "INSCRIPCIÓN ABIERTA" ? (
                     <button
                       onClick={() => window.location.href = `${conf.frontendPrivateUrl}/register?courseId=${course._id}`}
                       className="rounded-full cursor-pointer text-brand-tertiary px-8 py-3 font-semibold transition-all duration-500 bg-brand-secondary hover:ring-[3px] hover:ring-[#dcab07] hover:bg-brand-secondary active:bg-brand-tertiary active:text-white"
                     >
-                      Inscribirme
+                      {isAsync ? ASYNC_COURSE_COPY.ctaLabel : "Inscribirme"}
                     </button>
                   ) : (
                     <a
@@ -410,6 +414,7 @@ const CourseDetailClient: React.FC<CourseDetailClientProps> = ({ params }) => {
                 </h3>
 
                 <div className="space-y-4">
+                  {!isAsync && (
                   <div className="flex items-start gap-3">
                     <svg
                       className="h-5 w-5 text-brand-tertiary-lighten"
@@ -433,6 +438,8 @@ const CourseDetailClient: React.FC<CourseDetailClientProps> = ({ params }) => {
                       </p>
                     </div>
                   </div>
+
+                  )}
 
                   {typeof course.classCount === "number" && course.classCount > 0 && (
                     <div className="flex items-start gap-3">
@@ -458,7 +465,7 @@ const CourseDetailClient: React.FC<CourseDetailClientProps> = ({ params }) => {
                     </div>
                   )}
 
-                  {course.time && (
+                  {!isAsync && course.time && (
                     <div className="flex items-start gap-3">
                       <svg
                         className="h-5 w-5 text-brand-tertiary-lighten"
@@ -482,7 +489,7 @@ const CourseDetailClient: React.FC<CourseDetailClientProps> = ({ params }) => {
                     </div>
                   )}
 
-                  {course.days && course.days.length > 0 && (
+                  {!isAsync && course.days && course.days.length > 0 && (
                     <div className="flex items-start gap-3">
                       <svg
                         className="h-5 w-5 text-brand-tertiary-lighten"
@@ -506,6 +513,29 @@ const CourseDetailClient: React.FC<CourseDetailClientProps> = ({ params }) => {
                     </div>
                   )}
 
+                  {isAsync && (
+                    <div className="flex items-start gap-3">
+                      <svg
+                        className="h-5 w-5 text-brand-tertiary-lighten"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <div>
+                        <p className="text-sm font-medium text-white">Disponibilidad</p>
+                        <p className="text-brand-secondary">{ASYNC_COURSE_COPY.availabilityLabel}</p>
+                        <p className="text-brand-secondary">{ASYNC_COURSE_COPY.scheduleLabel}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {course.modality && (
                     <div className="flex items-start gap-3">
                       <svg
@@ -525,7 +555,7 @@ const CourseDetailClient: React.FC<CourseDetailClientProps> = ({ params }) => {
                         <p className="text-sm font-medium text-white">
                           Modalidad
                         </p>
-                        <p className="text-brand-secondary">{course.modality}</p>
+                        <p className="text-brand-secondary">{getCourseModalityLabel(course.modality)}</p>
                       </div>
                     </div>
                   )}
@@ -558,7 +588,7 @@ const CourseDetailClient: React.FC<CourseDetailClientProps> = ({ params }) => {
                   onClick={() => window.location.href = `${conf.frontendPrivateUrl}/register?courseId=${course._id}`}
                   className="mt-6 w-full rounded-full cursor-pointer text-brand-tertiary px-6 py-3 font-semibold transition-all duration-500 bg-brand-secondary hover:ring-[3px] hover:ring-[#dcab07] hover:bg-brand-secondary active:bg-brand-tertiary active:text-white"
                 >
-                  Inscribirme
+                  {isAsync ? ASYNC_COURSE_COPY.ctaLabel : "Inscribirme"}
                 </button>
 
                 {course.programUrl && (

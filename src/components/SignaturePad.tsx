@@ -13,15 +13,28 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ onChange }) => {
 
   const getCtx = () => canvasRef.current?.getContext("2d") ?? null;
 
-  // posicion del puntero relativa al canvas
+  // Corrige el desfasaje escalando las coordenadas CSS al buffer interno del canvas
   const getPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const rect = canvasRef.current!.getBoundingClientRect();
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
+    };
   };
 
   const startDraw = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const ctx = getCtx();
     if (!ctx) return;
+    
+    // Captura el puntero para que no se corte el trazo si salís rápido del área
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    
     drawing.current = true;
     const { x, y } = getPos(e);
     ctx.beginPath();
@@ -40,15 +53,18 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ onChange }) => {
     ctx.stroke();
   };
 
-  // al soltar, exportamos el trazo a blob y avisamos al padre
-  const endDraw = () => {
+  const endDraw = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!drawing.current) return;
     drawing.current = false;
+    
+    try {
+      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {}
+
     setHasSignature(true);
     canvasRef.current?.toBlob((blob) => onChange(blob), "image/png");
   };
 
-  // limpia el canvas y resetea la firma a null
   const clear = () => {
     const ctx = getCtx();
     const canvas = canvasRef.current;
@@ -61,18 +77,25 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ onChange }) => {
     <div>
       <canvas
         ref={canvasRef}
-        width={400}
-        height={160}
+        width={600}
+        height={200}
         onPointerDown={startDraw}
         onPointerMove={draw}
         onPointerUp={endDraw}
-        onPointerLeave={endDraw}
         className="w-full touch-none rounded-lg border border-brand-tertiary bg-white"
       />
-      <button type="button" onClick={clear} className="mt-2 text-sm text-red-600 underline cursor-pointer">
-        Limpiar firma
-      </button>
-      {hasSignature && <span className="ml-3 text-xs text-green-600">firma capturada ✓</span>}
+      <div className="mt-2 flex items-center">
+        <button
+          type="button"
+          onClick={clear}
+          className="text-sm text-red-600 underline cursor-pointer"
+        >
+          Limpiar firma
+        </button>
+        {hasSignature && (
+          <span className="ml-3 text-xs text-green-600">firma capturada ✓</span>
+        )}
+      </div>
     </div>
   );
 };

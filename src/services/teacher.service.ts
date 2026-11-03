@@ -8,8 +8,7 @@ export const uploadTeacherDocument = async (
   const formData = new FormData();
   formData.append(type, file);
 
-  const { data } = await api.post(
-    `/v1/user/teacher/apply/upload`,
+  const { data } = await api.post('/user/teacher/apply/upload',
     formData,
     { headers: { "Content-Type": "multipart/form-data" } }
   );
@@ -30,6 +29,6 @@ export interface ITeacherApplication {
 
 // envio final de la postulacion consolidada
 export const applyTeacher = async (payload: ITeacherApplication) => {
-const { data } = await api.post("/v1/user/teacher/apply", payload);
+  const { data } = await api.post("/user/teacher/apply", payload);
   return data;
 };

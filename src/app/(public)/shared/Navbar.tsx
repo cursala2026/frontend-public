@@ -35,14 +35,14 @@ const Navbar: React.FC = () => {
     const mobileNavItems = [
       { href: "/cursos", label: "Cursos" },
       { href: "/capacitaciones-empresas", label: "Capacitaciones Empresas" },
-      { href: "/quiero-capacitar", label: "Quiero Capacitar" },
+      { href: "/ser-profesor", label: "Enseñar en Cursala" },
       { href: "/preguntas", label: "Preguntas" },
     ];
 
     const desktopNavItems = [
       { href: "/cursos", label: "Cursos" },
-      { href: "/capacitaciones-empresas", label: "Capacitaciones Empresas" },
-      { href: "/quiero-capacitar", label: "Quiero Capacitar" },
+      { href: "/capacitaciones-empresas", label: "Capacitaciones Empresas" }, 
+      { href: "/ser-profesor", label: "Enseñar en Cursala" },
       { href: "/preguntas", label: "Preguntas" },
     ];
 

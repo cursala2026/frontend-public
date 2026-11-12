@@ -10,10 +10,12 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ onChange }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const [hasSignature, setHasSignature] = useState(false);
+  
+  // Ref para guardar la coordenada anterior y calcular la curva de suavizado
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
 
   const getCtx = () => canvasRef.current?.getContext("2d") ?? null;
 
-  // Corrige el desfasaje escalando las coordenadas CSS al buffer interno del canvas
   const getPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -32,35 +34,48 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ onChange }) => {
     const ctx = getCtx();
     if (!ctx) return;
     
-    // Captura el puntero para que no se corte el trazo si salís rápido del área
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    
+    // 1. ELIMINAMOS el setPointerCapture. 
+    // Ahora el canvas no secuestra el cursor si te salís de los bordes.
+
     drawing.current = true;
-    const { x, y } = getPos(e);
+    const pos = getPos(e);
+    lastPos.current = pos;
+    
     ctx.beginPath();
-    ctx.moveTo(x, y);
+    ctx.moveTo(pos.x, pos.y);
+    
+    // 2. Configuración para trazo de tinta (más suave y prolijo)
+    ctx.lineWidth = 2.5; 
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round"; // Clave: evita que las uniones rápidas generen picos
+    ctx.strokeStyle = "#1f2937";
   };
 
   const draw = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!drawing.current) return;
+    if (!drawing.current || !lastPos.current) return;
     const ctx = getCtx();
     if (!ctx) return;
-    const { x, y } = getPos(e);
-    ctx.lineTo(x, y);
-    ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#1f2937";
+
+    const currentPos = getPos(e);
+    
+    // 3. Suavizado matemático: en lugar de líneas rectas, calculamos 
+    // el punto medio y trazamos una curva cuadrática. Disimula los temblores del mouse.
+    const midPoint = {
+      x: lastPos.current.x + (currentPos.x - lastPos.current.x) / 2,
+      y: lastPos.current.y + (currentPos.y - lastPos.current.y) / 2
+    };
+
+    ctx.quadraticCurveTo(lastPos.current.x, lastPos.current.y, midPoint.x, midPoint.y);
     ctx.stroke();
+
+    lastPos.current = currentPos;
   };
 
-  const endDraw = (e: React.PointerEvent<HTMLCanvasElement>) => {
+  const endDraw = () => {
     if (!drawing.current) return;
     drawing.current = false;
+    lastPos.current = null;
     
-    try {
-      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-    } catch {}
-
     setHasSignature(true);
     canvasRef.current?.toBlob((blob) => onChange(blob), "image/png");
   };
@@ -68,22 +83,31 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ onChange }) => {
   const clear = () => {
     const ctx = getCtx();
     const canvas = canvasRef.current;
-    if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (ctx && canvas) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath(); // Purga la memoria del trazo anterior
+    }
     setHasSignature(false);
     onChange(null);
   };
 
   return (
     <div>
-      <canvas
-        ref={canvasRef}
-        width={600}
-        height={200}
-        onPointerDown={startDraw}
-        onPointerMove={draw}
-        onPointerUp={endDraw}
-        className="w-full touch-none rounded-lg border border-brand-tertiary bg-white"
-      />
+      {/* Contenedor estricto con overflow-hidden para enmascarar cualquier pixel suelto */}
+      <div className="w-full overflow-hidden rounded-lg border border-brand-tertiary bg-white">
+        <canvas
+          ref={canvasRef}
+          width={600}
+          height={200}
+          onPointerDown={startDraw}
+          onPointerMove={draw}
+          onPointerUp={endDraw}
+          // 4. Agregamos onPointerLeave para cortar la firma dinámicamente si el usuario saca el cursor
+          onPointerLeave={endDraw}
+          onPointerOut={endDraw} 
+          className="w-full touch-none cursor-crosshair"
+        />
+      </div>
       <div className="mt-2 flex items-center">
         <button
           type="button"

@@ -1,9 +1,8 @@
 import axios from "axios";
+import { config } from "process";
 
-// Usar la URL del backend desde el env, o /api por defecto
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "/api",
-  withCredentials: true,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8081/api/v1",
 });
 
 function getCookie(name: string): string | null {
@@ -13,24 +12,15 @@ function getCookie(name: string): string | null {
 }
 
 // Interceptor de Request: inyecta el token Bearer si existe en cookie o storage
-api.interceptors.request.use(
-  (config) => {
-    if (typeof window !== "undefined") {
-      const token =
-        getCookie("token") ||
-        localStorage.getItem("token") ||
-        localStorage.getItem("access_token");
-
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+api.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
   }
-);
+  return config;
+});
 
 // Interceptor de Response: logging detallado de errores de API
 api.interceptors.response.use(

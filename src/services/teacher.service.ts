@@ -1,22 +1,29 @@
 import api from "@/utils/axiosinstance";
 
-// levanta el archivo al servidor
-export const uploadTeacherDocument = async (
-  file: File,
-  type: "photo" | "cv" | "signature"
-): Promise<string> => {
+// Invertimos el orden en los parámetros por si el componente llama: uploadTeacherDocument(file, 'cv')
+export async function uploadTeacherDocument(
+  file: File | Blob,
+  type: "photo" | "cv" | "signature" 
+): Promise<string> {
   const formData = new FormData();
+  
+  // EL ORDEN ESTRICTO ES: 1° el string (type), 2° el binario (file)
   formData.append(type, file);
 
-  const { data } = await api.post('/user/teacher/apply/upload',
-    formData,
-    { headers: { "Content-Type": "multipart/form-data" } }
-  );
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  const { data } = await api.post("/user/teacher/apply/upload", formData, {
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
 
   return data.urls[type];
-};
+}
 
-// payload consolidado de la postulacion
+// Alias opcional por compatibilidad
+export const uploadTeacherFile = uploadTeacherDocument;
+
 export interface ITeacherApplication {
   title: string;
   yearsOfExperience: number;
@@ -27,8 +34,7 @@ export interface ITeacherApplication {
   agreementAccepted: boolean;
 }
 
-// envio final de la postulacion consolidada
-export const applyTeacher = async (payload: ITeacherApplication) => {
+export async function applyTeacher(payload: ITeacherApplication) {
   const { data } = await api.post("/user/teacher/apply", payload);
   return data;
-};
+}
